@@ -1,9 +1,9 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.graph_objs as go
+from dash.dependencies import Input, Output
 
 # Load CSV file from Datasets folder
 df1 = pd.read_csv('moviesData.csv')
@@ -17,12 +17,11 @@ for genre in genres:
     for singleGenre in sep_genre:
         if singleGenre not in genreList:
             genreList.append(singleGenre)
-print(genreList)
 
 #df1 = pd.read_csv('CoronavirusTotal.csv')
 #df2 = pd.read_csv('CoronaTimeSeries.csv')
 
-app = dash.Dash()
+app = dash.Dash(__name__)
 
 # Layout
 app.layout = html.Div(children=[
@@ -53,35 +52,42 @@ app.layout = html.Div(children=[
             ),
         ], style= {'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
-            dcc.Dropdown(
-                id='select-rating',
-                options=[
-                    {'label': 'Asia', 'value': 'Asia'},
-                    {'label': 'Africa', 'value': 'Africa'},
-                    {'label': 'Europe', 'value': 'Europe'},
-                    {'label': 'North America', 'value': 'North America'},
-                    {'label': 'Oceania', 'value': 'Oceania'},
-                    {'label': 'South America', 'value': 'South America'}
-                ],
-                value='Europe',
-                clearable = False,
-                searchable = False
+            html.Div('Select Minimum Rating',
+                     style={'textAlign': 'center',
+                            'color': '#A9A9A9',
+                            'font-size': 'medium',
+                            'margin-bottom': '6px'}),
+            dcc.Slider(
+                id='select-Rating',
+                min=0,
+                max=100,
+                step=1,
+                value=[0],
+                marks={
+                    0: {'label': '0%', 'style': {'color': '#77b0b1'}},
+                    100: {'label': '100%', 'style': {'color': '#77b0b1'}}
+                },
+                included = True
             ),
         ], style={'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
-            dcc.Dropdown(
+            html.Div('Select length range',
+                     style={'textAlign': 'center',
+                            'color': '#A9A9A9',
+                            'font-size': 'medium',
+                            'margin-bottom': '6px'}),
+            dcc.RangeSlider(
                 id='select-Length',
-                options=[
-                    {'label': 'Asia', 'value': 'Asia'},
-                    {'label': 'Africa', 'value': 'Africa'},
-                    {'label': 'Europe', 'value': 'Europe'},
-                    {'label': 'North America', 'value': 'North America'},
-                    {'label': 'Oceania', 'value': 'Oceania'},
-                    {'label': 'South America', 'value': 'South America'}
-                ],
-                value='Europe',
-                clearable = False,
-                searchable = False
+                min=1,
+                max=1256,
+                step=1,
+                value=[1, 1256],
+                marks={
+                    1: {'label': '1 min', 'style': {'color': '#77b0b1'}},
+                    1256: {'label': '1256 mins', 'style': {'color': '#77b0b1'}}
+                },
+                included=True,
+                allowCross=False
             ),
         ], style= {'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
@@ -108,6 +114,8 @@ app.layout = html.Div(children=[
 ])
 
 
+
+
 @app.callback(Output('graph1', 'figure'),
               [Input('select-continent', 'value')])
 def update_figure(selected_continent):
@@ -118,9 +126,6 @@ def update_figure(selected_continent):
     new_df2 = filtered_df1['Hulu'].value_counts()[1]
     new_df3 = filtered_df1['Prime Video'].value_counts()[1]
     new_df4 = filtered_df1['Disney+'].value_counts()[1]
-    print(new_df1)
-    print(new_df2)
-    print(new_df3)
     #new_df = new_df.sort_values(by=['Confirmed'], ascending=[False]).head(20)
     data_interactive_barchart = [go.Bar(x=['Netflix', 'Hulu', 'Prime Video', 'Disney+'], y=[new_df1, new_df2, new_df3, new_df4])]
     return {'data': data_interactive_barchart, 'layout': go.Layout(title='Number of movies on each streaming service',
