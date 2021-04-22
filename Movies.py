@@ -129,28 +129,32 @@ app.layout = html.Div(children=[
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'})
-        ], style={'width': '25%'})
+        ], style={'width': '25%', 'margin-top': '6px'})
     ], style={'display': 'flex'})
 ])
 
 @app.callback(Output('rating-output', 'children'),
               [Input('select-Rating', 'drag_value')])
 def display_value(drag_value):
-    return 'More than {}%'.format(drag_value[0])
+    return 'More than {}%'.format(drag_value)
 
 @app.callback(Output('length-output', 'children'),
               [Input('select-Length', 'drag_value')])
 def display_value(drag_value):
+    if drag_value is None:
+        return 'Between {} and {} mins'.format(0, 0)
     return 'Between {} and {} mins'.format(drag_value[0], drag_value[1])
 
 @app.callback(Output('year-output', 'children'),
               [Input('select-Age', 'drag_value')])
 def display_value(drag_value):
+    if drag_value is None:
+        return 'Between {} and {} mins'.format(0, 0)
     return 'Created between {} and {}'.format(drag_value[0], drag_value[1])
 
 @app.callback(Output('graph1', 'figure'),
-              [Input('select-Genre', 'value')])
-def update_figure(selected_continent):
+              [Input('select-Genre', 'genre'), Input('select-Age', 'years'), Input('select-Length', 'length'), Input('select-Rating', 'rating')])
+def update_figure(genre, years, length, rating):
     filtered_df1 = df1
 
     filtered_df1 = filtered_df1.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
