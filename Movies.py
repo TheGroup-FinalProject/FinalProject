@@ -17,7 +17,6 @@ for genre in genres:
     for singleGenre in sep_genre:
         if singleGenre not in genreList:
             genreList.append(singleGenre)
-
 #df1 = pd.read_csv('CoronavirusTotal.csv')
 #df2 = pd.read_csv('CoronaTimeSeries.csv')
 
@@ -65,10 +64,17 @@ app.layout = html.Div(children=[
                 value=[0],
                 marks={
                     0: {'label': '0%', 'style': {'color': '#77b0b1'}},
+                    25: {'label': '25%', 'style': {'color': '#77b0b1'}},
+                    50: {'label': '50%', 'style': {'color': '#77b0b1'}},
+                    75: {'label': '75%', 'style': {'color': '#77b0b1'}},
                     100: {'label': '100%', 'style': {'color': '#77b0b1'}}
                 },
                 included = True
             ),
+            html.Div(id='rating-output', style={'textAlign': 'center',
+                                                'color': '#A9A9A9',
+                                                'font-size': 'medium',
+                                                'margin-bottom': '6px'})
         ], style={'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
             html.Div('Select length range',
@@ -84,11 +90,18 @@ app.layout = html.Div(children=[
                 value=[1, 1256],
                 marks={
                     1: {'label': '1 min', 'style': {'color': '#77b0b1'}},
+                    314: {'label': '314 mins', 'style': {'color': '#77b0b1'}},
+                    628: {'label': '628 mins', 'style': {'color': '#77b0b1'}},
+                    948: {'label': '948 mins', 'style': {'color': '#77b0b1'}},
                     1256: {'label': '1256 mins', 'style': {'color': '#77b0b1'}}
                 },
                 included=True,
                 allowCross=False
             ),
+            html.Div(id='length-output', style={'textAlign': 'center',
+                                                'color': '#A9A9A9',
+                                                'font-size': 'medium',
+                                                'margin-bottom': '6px'})
         ], style= {'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
             html.Div('Select year range',
@@ -104,20 +117,39 @@ app.layout = html.Div(children=[
                 value = [1902, 2020],
                 marks = {
                     1902: {'label': 1902, 'style': {'color': '#77b0b1'}},
+                    1931: {'label': 1931, 'style': {'color': '#77b0b1'}},
+                    1961: {'label': 1961, 'style': {'color': '#77b0b1'}},
+                    1990: {'label': 1990, 'style': {'color': '#77b0b1'}},
                     2020: {'label': 2020, 'style': {'color': '#77b0b1'}}
                 },
                 included = True,
                 allowCross = False
             ),
+            html.Div(id='year-output', style={'textAlign': 'center',
+                                                'color': '#A9A9A9',
+                                                'font-size': 'medium',
+                                                'margin-bottom': '6px'})
         ], style={'width': '25%'})
     ], style={'display': 'flex'})
 ])
 
+@app.callback(Output('rating-output', 'children'),
+              [Input('select-Rating', 'drag_value')])
+def display_value(drag_value):
+    return 'More than {}%'.format(drag_value[0])
 
+@app.callback(Output('length-output', 'children'),
+              [Input('select-Length', 'drag_value')])
+def display_value(drag_value):
+    return 'Between {} and {} mins'.format(drag_value[0], drag_value[1])
 
+@app.callback(Output('year-output', 'children'),
+              [Input('select-Age', 'drag_value')])
+def display_value(drag_value):
+    return 'Created between {} and {}'.format(drag_value[0], drag_value[1])
 
 @app.callback(Output('graph1', 'figure'),
-              [Input('select-continent', 'value')])
+              [Input('select-Genre', 'value')])
 def update_figure(selected_continent):
     filtered_df1 = df1
 
