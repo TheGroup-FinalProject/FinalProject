@@ -38,6 +38,14 @@ app.layout = html.Div(children=[
     html.H3('Interactive Bar chart', style={'color': '#df1e56'}),
     html.Div('This bar chart represent the number of movies on a given streaming service'),
     dcc.Graph(id='graph1'),
+    html.Div(className='toggleRow', children=[
+        dcc.Checklist(
+            id="percentToggle",
+            options=[
+            {'label': 'Toggle Percentage', 'value': 'Percentage'}
+            ]
+        )
+    ]),
     html.Div(className = 'row', children = [
         html.Div(className = 'four columns', children = [
             dcc.Dropdown(
@@ -47,7 +55,7 @@ app.layout = html.Div(children=[
                 ],
                 placeholder='Select Genre...',
                 clearable = False,
-                searchable = False
+                searchable = True
             ),
         ], style= {'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
@@ -61,7 +69,7 @@ app.layout = html.Div(children=[
                 min=0,
                 max=100,
                 step=1,
-                value=[0],
+                value=0,
                 marks={
                     0: {'label': '0%', 'style': {'color': '#77b0b1'}},
                     25: {'label': '25%', 'style': {'color': '#77b0b1'}},
@@ -129,40 +137,95 @@ app.layout = html.Div(children=[
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'})
-        ], style={'width': '25%'})
+        ], style={'width': '25%', 'margin-top': '6px'})
     ], style={'display': 'flex'})
 ])
 
 @app.callback(Output('rating-output', 'children'),
               [Input('select-Rating', 'drag_value')])
 def display_value(drag_value):
-    return 'More than {}%'.format(drag_value[0])
+    return 'More than {}%'.format(drag_value)
 
 @app.callback(Output('length-output', 'children'),
               [Input('select-Length', 'drag_value')])
 def display_value(drag_value):
+    if drag_value is None:
+        return 'Between {} and {} mins'.format(0, 0)
     return 'Between {} and {} mins'.format(drag_value[0], drag_value[1])
 
 @app.callback(Output('year-output', 'children'),
               [Input('select-Age', 'drag_value')])
 def display_value(drag_value):
+    if drag_value is None:
+        return 'Between {} and {} mins'.format(0, 0)
     return 'Created between {} and {}'.format(drag_value[0], drag_value[1])
 
 @app.callback(Output('graph1', 'figure'),
-              [Input('select-Genre', 'value')])
-def update_figure(selected_continent):
+              [Input('percentToggle', 'value'),
+               Input('select-Genre', 'value'),
+               Input('select-Age', 'drag_value'),
+               Input('select-Length', 'drag_value'),
+               Input('select-Rating', 'drag_value')])
+def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating):
     filtered_df1 = df1
+    NetflixTotal = safeFilter(filtered_df1, "Netflix")
+    HuluTotal = safeFilter(filtered_df1, "Hulu")
+    PrimeTotal = safeFilter(filtered_df1, "Prime Video")
+    DisneyTotal = safeFilter(filtered_df1, "Disney+")
 
-    filtered_df1 = filtered_df1.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
-    new_df1 = filtered_df1['Netflix'].value_counts()[1]
-    new_df2 = filtered_df1['Hulu'].value_counts()[1]
-    new_df3 = filtered_df1['Prime Video'].value_counts()[1]
-    new_df4 = filtered_df1['Disney+'].value_counts()[1]
-    #new_df = new_df.sort_values(by=['Confirmed'], ascending=[False]).head(20)
-    data_interactive_barchart = [go.Bar(x=['Netflix', 'Hulu', 'Prime Video', 'Disney+'], y=[new_df1, new_df2, new_df3, new_df4])]
-    return {'data': data_interactive_barchart, 'layout': go.Layout(title='Number of movies on each streaming service',
-                                                                   xaxis={'title': 'Service'},
-                                                                   yaxis={'title': 'Number of films'})}
+
+    #filtered_df1 = filtered_df1.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+    print(selected_genre)
+    print(selected_years)
+    print(selected_length)
+    print(selected_rating)
+    if selected_genre:
+        filtered_df1 = df1[df1["Genres"].str.contains(selected_genre, na=False)]
+    if selected_years:
+        filtered_df1 = filtered_df1[
+            (selected_years[0] <= filtered_df1["Year"]) & (filtered_df1["Year"] <= selected_years[1])]
+    if selected_length:
+        filtered_df1 = filtered_df1[
+            ((selected_length[0] <= filtered_df1["Runtime"]) & (filtered_df1["Runtime"] <= selected_length[1]))] #| (filtered_df1["Runtime"].isnull())
+    if selected_rating:
+        #try:
+        filtered_df1 = filtered_df1[
+                (filtered_df1["Rotten Tomatoes"].notna())]
+        filtered_df1 = filtered_df1[(selected_rating <= filtered_df1["Rotten Tomatoes"].str.rstrip("%").astype(int))]
+        #except ValueError:
+            #pass
+    if togglePercentage:
+        new_df1 = round((safeFilter(filtered_df1, "Netflix") / NetflixTotal), 2) * 100
+        new_df2 = round((safeFilter(filtered_df1, "Hulu") / HuluTotal), 2) * 100
+        new_df3 = round((safeFilter(filtered_df1, "Prime Video") / PrimeTotal), 2) * 100
+        new_df4 = round((safeFilter(filtered_df1, "Disney+") / DisneyTotal), 2) * 100
+        data_interactive_barchart = [
+            go.Bar(x=['Netflix', 'Hulu', 'Prime Video', 'Disney+'], y=[new_df1, new_df2, new_df3, new_df4])]
+        return {'data': data_interactive_barchart,
+                'layout': go.Layout(title='percentage of films on each streaming service matching filter criteria',
+                                    xaxis={'title': 'Service'},
+                                    yaxis={'title': 'percentage of films'})}
+
+    else:
+        new_df1 = safeFilter(filtered_df1, "Netflix")
+        new_df2 = safeFilter(filtered_df1, "Hulu")
+        new_df3 = safeFilter(filtered_df1, "Prime Video")
+        new_df4 = safeFilter(filtered_df1, "Disney+")
+        data_interactive_barchart = [
+            go.Bar(x=['Netflix', 'Hulu', 'Prime Video', 'Disney+'], y=[new_df1, new_df2, new_df3, new_df4])]
+        return {'data': data_interactive_barchart,
+                'layout': go.Layout(title='Number of movies on each streaming service',
+                                    xaxis={'title': 'Filters'},
+                                    yaxis={'title': 'Number of films'})}
+
+
+
+def safeFilter(dataframe, service):
+    try:
+        filtered_df = dataframe[service].value_counts()[1]
+    except KeyError:
+        filtered_df = 0
+    return filtered_df
 
 
 if __name__ == '__main__':
