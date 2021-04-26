@@ -8,7 +8,7 @@ from dash.dependencies import Input, Output
 # Load CSV file from Datasets folder
 df1 = pd.read_csv('moviesData.csv')
 genres = df1['Genres'].unique()
-genreList = []
+genreList = ["All"]
 for genre in genres:
     try:
         sep_genre = genre.split(',')
@@ -180,7 +180,8 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
     print(selected_length)
     print(selected_rating)
     if selected_genre:
-        filtered_df1 = df1[df1["Genres"].str.contains(selected_genre, na=False)]
+        if selected_genre != 'All':
+            filtered_df1 = df1[df1["Genres"].str.contains(selected_genre, na=False)]
     if selected_years:
         filtered_df1 = filtered_df1[
             (selected_years[0] <= filtered_df1["Year"]) & (filtered_df1["Year"] <= selected_years[1])]
