@@ -82,7 +82,15 @@ app.layout = html.Div(children=[
             html.Div(id='rating-output', style={'textAlign': 'center',
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
-                                                'margin-bottom': '6px'})
+                                                'margin-bottom': '6px'}),
+            dcc.Checklist(
+                id="ratingToggle",
+                options=[
+                    {'label': 'Toggle Rating', 'value': 'ratingSwitch'}
+                ],
+                value=['ratingSwitch'],
+                style={'textAlign': 'center'}
+            )
         ], style={'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
             html.Div('Select length range',
@@ -109,7 +117,15 @@ app.layout = html.Div(children=[
             html.Div(id='length-output', style={'textAlign': 'center',
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
-                                                'margin-bottom': '6px'})
+                                                'margin-bottom': '6px'}),
+            dcc.Checklist(
+                id="lengthToggle",
+                options=[
+                    {'label': 'Toggle Length', 'value': 'lengthSwitch'}
+                ],
+                value=['lengthSwitch'],
+                style={'textAlign': 'center'}
+            )
         ], style= {'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
             html.Div('Select year range',
@@ -136,7 +152,15 @@ app.layout = html.Div(children=[
             html.Div(id='year-output', style={'textAlign': 'center',
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
-                                                'margin-bottom': '6px'})
+                                                'margin-bottom': '6px'}),
+            dcc.Checklist(
+                id="ageToggle",
+                options=[
+                    {'label': 'Toggle Years', 'value': 'yearSwitch'}
+                ],
+                value=['yearSwitch'],
+                style={'textAlign': 'center'}
+            )
         ], style={'width': '25%', 'margin-top': '6px'})
     ], style={'display': 'flex'})
 ])
@@ -165,8 +189,11 @@ def display_value(drag_value):
                Input('select-Genre', 'value'),
                Input('select-Age', 'drag_value'),
                Input('select-Length', 'drag_value'),
-               Input('select-Rating', 'drag_value')])
-def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating):
+               Input('select-Rating', 'drag_value'),
+               Input('ratingToggle', 'value'),
+               Input('lengthToggle', 'value'),
+               Input('ageToggle', 'value')])
+def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating, toggle_rating, toggle_length, toggle_age):
     filtered_df1 = df1
     NetflixTotal = safeFilter(filtered_df1, "Netflix")
     HuluTotal = safeFilter(filtered_df1, "Hulu")
@@ -182,19 +209,24 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
     if selected_genre:
         if selected_genre != 'All':
             filtered_df1 = df1[df1["Genres"].str.contains(selected_genre, na=False)]
-    if selected_years:
-        filtered_df1 = filtered_df1[
-            (selected_years[0] <= filtered_df1["Year"]) & (filtered_df1["Year"] <= selected_years[1])]
-    if selected_length:
-        filtered_df1 = filtered_df1[
-            ((selected_length[0] <= filtered_df1["Runtime"]) & (filtered_df1["Runtime"] <= selected_length[1]))] #| (filtered_df1["Runtime"].isnull())
-    if selected_rating:
-        #try:
-        filtered_df1 = filtered_df1[
-                (filtered_df1["Rotten Tomatoes"].notna())]
-        filtered_df1 = filtered_df1[(selected_rating <= filtered_df1["Rotten Tomatoes"].str.rstrip("%").astype(int))]
-        #except ValueError:
-            #pass
+
+    if toggle_age:
+        if selected_years:
+            filtered_df1 = filtered_df1[
+                (selected_years[0] <= filtered_df1["Year"]) & (filtered_df1["Year"] <= selected_years[1])]
+
+    if toggle_length:
+        if selected_length:
+            filtered_df1 = filtered_df1[
+                (filtered_df1["Runtime"].notna())]
+            filtered_df1 = filtered_df1[
+                ((selected_length[0] <= filtered_df1["Runtime"]) & (filtered_df1["Runtime"] <= selected_length[1]))] #| (filtered_df1["Runtime"].isnull())
+
+    if toggle_rating:
+        if selected_rating:
+            filtered_df1 = filtered_df1[
+                    (filtered_df1["Rotten Tomatoes"].notna())]
+            filtered_df1 = filtered_df1[(selected_rating <= filtered_df1["Rotten Tomatoes"].str.rstrip("%").astype(int))]
     if togglePercentage:
         new_df1 = round((safeFilter(filtered_df1, "Netflix") / NetflixTotal), 2) * 100
         new_df2 = round((safeFilter(filtered_df1, "Hulu") / HuluTotal), 2) * 100
@@ -216,7 +248,7 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
             go.Bar(x=['Netflix', 'Hulu', 'Prime Video', 'Disney+'], y=[new_df1, new_df2, new_df3, new_df4])]
         return {'data': data_interactive_barchart,
                 'layout': go.Layout(title='Number of movies on each streaming service',
-                                    xaxis={'title': 'Filters'},
+                                    xaxis={'title': 'Service'},
                                     yaxis={'title': 'Number of films'})}
 
 
