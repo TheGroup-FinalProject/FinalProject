@@ -1,9 +1,10 @@
 import dash
+import dash_table as dt
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 import plotly.graph_objs as go
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 # Load CSV file from Datasets folder
 df1 = pd.read_csv('moviesData.csv')
@@ -17,13 +18,34 @@ for genre in genres:
     for singleGenre in sep_genre:
         if singleGenre not in genreList:
             genreList.append(singleGenre)
-#df1 = pd.read_csv('CoronavirusTotal.csv')
-#df2 = pd.read_csv('CoronaTimeSeries.csv')
+
+global globalGenre
+globalGenre = "All"
+
+global globalRatingBool
+globalRatingBool = None
+global globalRating
+globalRating = None
+
+global globalLengthBool
+globalLengthBool = None
+global globalLengths
+globalLengths = None
+
+global globalYearBool
+yearRangeBool = None
+global globalYears
+globalYears = None
 
 app = dash.Dash(__name__)
 
 # Layout
-app.layout = html.Div(children=[
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+page_1_layout = html.Div(children=[
     html.H1(children='PerfectMovie',
             style={
                 'textAlign': 'center',
@@ -38,6 +60,26 @@ app.layout = html.Div(children=[
     html.H3('Interactive Bar chart', style={'color': '#df1e56'}),
     html.Div('This bar chart represent the number of movies on a given streaming service'),
     dcc.Graph(id='graph1'),
+    html.Div(className='row', children=[
+        html.Div(className = 'four columns', children = [
+            dcc.Link(
+                html.Button('Show movie List'),
+                href='/netList'),
+            dcc.Link(
+                html.Button('Show movie List'),
+                href='/huList',
+                style = {"position":"relative", "left":"265px"}),
+            dcc.Link(
+                html.Button('Show movie List'),
+                href='/pvList',
+                style = {"position":"relative", "left":"528px"}),
+            dcc.Link(
+                html.Button('Show movie List'),
+                href='/disList',
+                style={"position": "relative", "left": "790px"})
+            ], style= {"position":"relative", "left":"210px", "top":"-50px", "bottom": "50px"})
+
+    ]),
     html.Div(className='toggleRow', children=[
         dcc.Checklist(
             id="percentToggle",
@@ -56,7 +98,7 @@ app.layout = html.Div(children=[
                 placeholder='Select Genre...',
                 clearable = False,
                 searchable = True
-            ),
+            )
         ], style= {'width': '25%', 'margin-top': '6px'}),
         html.Div(className = 'four columns', children = [
             html.Div('Select Minimum Rating',
@@ -164,6 +206,135 @@ app.layout = html.Div(children=[
         ], style={'width': '25%', 'margin-top': '6px'})
     ], style={'display': 'flex'})
 ])
+netflixBarList = html.Div(children=[
+    html.H1(children='PerfectMovie',
+            style={
+                'textAlign': 'center',
+                'color': '#ef3e18'
+            }
+            ),
+    html.Div('Web dashboard for Data Visualization using Python', style={'textAlign': 'center'}),
+    html.Div('Streaming Service records', style={'textAlign': 'center'}),
+    html.Br(),
+    html.Br(),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Netflix Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
+    dcc.Checklist(
+        id="listGen",
+        options=[
+            {'label': 'Create List', 'value': 'createList'}
+        ],
+        value=['createList'],
+        style={'textAlign': 'center'}
+    ),
+    dt.DataTable(id='netflixTable',
+                 columns=[{'name': movie, 'id': movie} for movie in (set(df1.columns) - set(["Netflix","Hulu", "Prime Video", "Disney+"]))],
+                 style_cell={'textAlign': 'left'})
+
+])
+
+huluBarList = html.Div(children=[
+    html.H1(children='PerfectMovie',
+            style={
+                'textAlign': 'center',
+                'color': '#ef3e18'
+            }
+            ),
+    html.Div('Web dashboard for Data Visualization using Python', style={'textAlign': 'center'}),
+    html.Div('Streaming Service records', style={'textAlign': 'center'}),
+    html.Br(),
+    html.Br(),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Hulu Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
+    dcc.Checklist(
+        id="listGen",
+        options=[
+            {'label': 'Create List', 'value': 'createList'}
+        ],
+        value=['createList'],
+        style={'textAlign': 'center'}
+    ),
+    dt.DataTable(id='huluTable',
+                 columns=[{'name': movie, 'id': movie} for movie in (set(df1.columns) - set(["Netflix","Hulu", "Prime Video", "Disney+"]))],
+                 style_cell={'textAlign': 'left'})
+
+])
+
+primeBarList = html.Div(children=[
+    html.H1(children='PerfectMovie',
+            style={
+                'textAlign': 'center',
+                'color': '#ef3e18'
+            }
+            ),
+    html.Div('Web dashboard for Data Visualization using Python', style={'textAlign': 'center'}),
+    html.Div('Streaming Service records', style={'textAlign': 'center'}),
+    html.Br(),
+    html.Br(),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Prime Video Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
+    dcc.Checklist(
+        id="listGen",
+        options=[
+            {'label': 'Create List', 'value': 'createList'}
+        ],
+        value=['createList'],
+        style={'textAlign': 'center'}
+    ),
+    dt.DataTable(id='primeTable',
+                 columns=[{'name': movie, 'id': movie} for movie in (set(df1.columns) - set(["Netflix","Hulu", "Prime Video", "Disney+"]))],
+                 style_cell={'textAlign': 'left'})
+
+])
+
+disneyBarList = html.Div(children=[
+    html.H1(children='PerfectMovie',
+            style={
+                'textAlign': 'center',
+                'color': '#ef3e18'
+            }
+            ),
+    html.Div('Web dashboard for Data Visualization using Python', style={'textAlign': 'center'}),
+    html.Div('Streaming Service records', style={'textAlign': 'center'}),
+    html.Br(),
+    html.Br(),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Disney Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
+    dcc.Checklist(
+        id="listGen",
+        options=[
+            {'label': 'Create List', 'value': 'createList'}
+        ],
+        value=['createList'],
+        style={'textAlign': 'center'}
+    ),
+    dt.DataTable(id='disneyTable',
+                 columns=[{'name': movie, 'id': movie} for movie in (set(df1.columns) - set(["Netflix","Hulu", "Prime Video", "Disney+"]))],
+                 style_cell={'textAlign': 'left'})
+
+])
+
+
+@app.callback(Output('genreValue', 'data'),
+              [Input('select-Genre', 'value')])
+def update_genreValue(selected_genre):
+    if selected_genre:
+        print(selected_genre)
+        return selected_genre
+    else:
+        return 'All'
 
 @app.callback(Output('rating-output', 'children'),
               [Input('select-Rating', 'drag_value')])
@@ -195,10 +366,10 @@ def display_value(drag_value):
                Input('ageToggle', 'value')])
 def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating, toggle_rating, toggle_length, toggle_age):
     filtered_df1 = df1
-    NetflixTotal = safeFilter(filtered_df1, "Netflix")
-    HuluTotal = safeFilter(filtered_df1, "Hulu")
-    PrimeTotal = safeFilter(filtered_df1, "Prime Video")
-    DisneyTotal = safeFilter(filtered_df1, "Disney+")
+    NetflixTotal = safeFilterCounts(filtered_df1, "Netflix")
+    HuluTotal = safeFilterCounts(filtered_df1, "Hulu")
+    PrimeTotal = safeFilterCounts(filtered_df1, "Prime Video")
+    DisneyTotal = safeFilterCounts(filtered_df1, "Disney+")
 
 
     #filtered_df1 = filtered_df1.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -208,30 +379,49 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
     print(selected_rating)
     if selected_genre:
         if selected_genre != 'All':
+            global globalGenre
+            globalGenre = selected_genre
             filtered_df1 = df1[df1["Genres"].str.contains(selected_genre, na=False)]
 
     if toggle_age:
+        global globalYearBool
+        globalYearBool = True
         if selected_years:
+            global globalYears
+            globalYears = [selected_years[0], selected_years[1]]
             filtered_df1 = filtered_df1[
                 (selected_years[0] <= filtered_df1["Year"]) & (filtered_df1["Year"] <= selected_years[1])]
 
     if toggle_length:
+        global globalLengthBool
+        globalLengthBool = True
         if selected_length:
+            global globalLengths
+            globalLengths = [selected_length[0], selected_length[1]]
             filtered_df1 = filtered_df1[
                 (filtered_df1["Runtime"].notna())]
             filtered_df1 = filtered_df1[
-                ((selected_length[0] <= filtered_df1["Runtime"]) & (filtered_df1["Runtime"] <= selected_length[1]))] #| (filtered_df1["Runtime"].isnull())
+                ((selected_length[0] <= filtered_df1["Runtime"]) & (filtered_df1["Runtime"] <= selected_length[1]))]
 
     if toggle_rating:
+        global globalRatingBool
+        globalRatingBool = True
         if selected_rating:
+            global globalRating
+            globalRating = selected_rating
             filtered_df1 = filtered_df1[
                     (filtered_df1["Rotten Tomatoes"].notna())]
             filtered_df1 = filtered_df1[(selected_rating <= filtered_df1["Rotten Tomatoes"].str.rstrip("%").astype(int))]
+
+    new_df1 = safeFilterCounts(filtered_df1, "Netflix")
+    new_df2 = safeFilterCounts(filtered_df1, "Hulu")
+    new_df3 = safeFilterCounts(filtered_df1, "Prime Video")
+    new_df4 = safeFilterCounts(filtered_df1, "Disney+")
     if togglePercentage:
-        new_df1 = round((safeFilter(filtered_df1, "Netflix") / NetflixTotal), 2) * 100
-        new_df2 = round((safeFilter(filtered_df1, "Hulu") / HuluTotal), 2) * 100
-        new_df3 = round((safeFilter(filtered_df1, "Prime Video") / PrimeTotal), 2) * 100
-        new_df4 = round((safeFilter(filtered_df1, "Disney+") / DisneyTotal), 2) * 100
+        new_df1 = round((new_df1 / NetflixTotal), 2) * 100
+        new_df2 = round((new_df2 / HuluTotal), 2) * 100
+        new_df3 = round((new_df3 / PrimeTotal), 2) * 100
+        new_df4 = round((new_df4 / DisneyTotal), 2) * 100
         data_interactive_barchart = [
             go.Bar(x=['Netflix', 'Hulu', 'Prime Video', 'Disney+'], y=[new_df1, new_df2, new_df3, new_df4])]
         return {'data': data_interactive_barchart,
@@ -240,10 +430,6 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
                                     yaxis={'title': 'percentage of films'})}
 
     else:
-        new_df1 = safeFilter(filtered_df1, "Netflix")
-        new_df2 = safeFilter(filtered_df1, "Hulu")
-        new_df3 = safeFilter(filtered_df1, "Prime Video")
-        new_df4 = safeFilter(filtered_df1, "Disney+")
         data_interactive_barchart = [
             go.Bar(x=['Netflix', 'Hulu', 'Prime Video', 'Disney+'], y=[new_df1, new_df2, new_df3, new_df4])]
         return {'data': data_interactive_barchart,
@@ -252,14 +438,106 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
                                     yaxis={'title': 'Number of films'})}
 
 
+@app.callback(Output('netflixTable', 'data'),
+               Input('listGen', 'value'))
+def update_table(genVal):
+    filtered_df1 = df1
 
-def safeFilter(dataframe, service):
+    if genVal:
+        filtered_df1 = filterForBar(filtered_df1)
+
+        netflixData = filtered_df1[filtered_df1['Netflix'] == 1]
+        netflixData = netflixData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
+        return netflixData
+
+
+@app.callback(Output('huluTable', 'data'),
+              Input('listGen', 'value'))
+def update_table(genVal):
+    filtered_df1 = df1
+
+    if genVal:
+        filtered_df1 = filterForBar(filtered_df1)
+
+        huluData = filtered_df1[filtered_df1['Hulu'] == 1]
+        huluData = huluData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
+        return huluData
+
+
+@app.callback(Output('primeTable', 'data'),
+              Input('listGen', 'value'))
+def update_table(genVal):
+    filtered_df1 = df1
+
+    if genVal:
+        filtered_df1 = filterForBar(filtered_df1)
+
+        primeData = filtered_df1[filtered_df1['Prime Video'] == 1]
+        primeData = primeData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
+        return primeData
+
+@app.callback(Output('disneyTable', 'data'),
+              Input('listGen', 'value'))
+def update_table(genVal):
+    filtered_df1 = df1
+
+    if genVal:
+        filtered_df1 = filterForBar(filtered_df1)
+
+        disneyData = filtered_df1[filtered_df1['Disney+'] == 1]
+        disneyData = disneyData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
+        return disneyData
+
+def filterForBar(df):
+    if globalGenre != 'All':
+        df = df1[df1["Genres"].str.contains(globalGenre, na=False)]
+
+    if globalYearBool:
+        if globalYears:
+            df = df[
+                (globalYears[0] <= df["Year"]) & (df["Year"] <= globalYears[1])]
+
+    if globalLengthBool:
+        if globalLengths:
+            df = df[
+                (df["Runtime"].notna())]
+            df = df[
+                ((globalLengths[0] <= df["Runtime"]) & (
+                             df["Runtime"] <= globalLengths[1]))]
+
+    if globalRatingBool:
+        if globalRating:
+            df = df[
+                (df["Rotten Tomatoes"].notna())]
+            df = df[
+                (globalRating <= df["Rotten Tomatoes"].str.rstrip("%").astype(int))]
+
+    return df
+
+def safeFilterCounts(dataframe, service):
     try:
         filtered_df = dataframe[service].value_counts()[1]
     except KeyError:
         filtered_df = 0
     return filtered_df
 
+
+
+
+@app.callback(Output('page-content', 'children'),
+              [Input('url', 'pathname')])
+def display_page(pathname):
+    print(pathname)
+    if pathname == '/netList':
+        return netflixBarList
+    elif pathname == '/huList':
+        return huluBarList
+    elif pathname == '/pvList':
+        return primeBarList
+    elif pathname == '/disList':
+        return disneyBarList
+    else:
+        return page_1_layout
 
 if __name__ == '__main__':
     app.run_server()
