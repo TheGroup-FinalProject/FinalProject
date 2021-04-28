@@ -8,6 +8,8 @@ from dash.dependencies import Input, Output, State
 
 # Load CSV file from Datasets folder
 df1 = pd.read_csv('moviesData.csv')
+
+#create list of separate genres
 genres = df1['Genres'].unique()
 genreList = ["All"]
 for genre in genres:
@@ -19,6 +21,7 @@ for genre in genres:
         if singleGenre not in genreList:
             genreList.append(singleGenre)
 
+#initialize global variables to be used among all pages
 global globalGenre
 globalGenre = "All"
 
@@ -37,14 +40,18 @@ yearRangeBool = None
 global globalYears
 globalYears = None
 
+
+
 app = dash.Dash(__name__)
 
-# Layout
+
+# initializing layout
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
 
+#main page layout
 page_1_layout = html.Div(children=[
     html.H1(children='PerfectMovie',
             style={
@@ -60,6 +67,8 @@ page_1_layout = html.Div(children=[
     html.H3('Interactive Bar chart', style={'color': '#df1e56'}),
     html.Div('This bar chart represent the number of movies on a given streaming service'),
     dcc.Graph(id='graph1'),
+
+    #create links to list pages#create links to list pages
     html.Div(className='row', children=[
         html.Div(className = 'four columns', children = [
             dcc.Link(
@@ -80,6 +89,8 @@ page_1_layout = html.Div(children=[
             ], style= {"position":"relative", "left":"210px", "top":"-50px", "bottom": "50px"})
 
     ]),
+
+    #create percentage toggle
     html.Div(className='toggleRow', children=[
         dcc.Checklist(
             id="percentToggle",
@@ -88,7 +99,11 @@ page_1_layout = html.Div(children=[
             ]
         )
     ]),
+
+    #create filters
     html.Div(className = 'row', children = [
+
+        #create genre dropdown
         html.Div(className = 'four columns', children = [
             dcc.Dropdown(
                 id='select-Genre',
@@ -100,6 +115,8 @@ page_1_layout = html.Div(children=[
                 searchable = True
             )
         ], style= {'width': '25%', 'margin-top': '6px'}),
+
+        #create minimum rating slider
         html.Div(className = 'four columns', children = [
             html.Div('Select Minimum Rating',
                      style={'textAlign': 'center',
@@ -125,6 +142,8 @@ page_1_layout = html.Div(children=[
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
+
+            #create toggle for rating filter
             dcc.Checklist(
                 id="ratingToggle",
                 options=[
@@ -134,6 +153,8 @@ page_1_layout = html.Div(children=[
                 style={'textAlign': 'center'}
             )
         ], style={'width': '25%', 'margin-top': '6px'}),
+
+        #create runtime range slider
         html.Div(className = 'four columns', children = [
             html.Div('Select length range',
                      style={'textAlign': 'center',
@@ -160,6 +181,7 @@ page_1_layout = html.Div(children=[
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
+            #create toggle for runtime range filter
             dcc.Checklist(
                 id="lengthToggle",
                 options=[
@@ -169,6 +191,8 @@ page_1_layout = html.Div(children=[
                 style={'textAlign': 'center'}
             )
         ], style= {'width': '25%', 'margin-top': '6px'}),
+
+        #create year range slider
         html.Div(className = 'four columns', children = [
             html.Div('Select year range',
                      style={'textAlign': 'center',
@@ -195,6 +219,8 @@ page_1_layout = html.Div(children=[
                                                 'color': '#A9A9A9',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
+
+            #create toggle for Year range filter
             dcc.Checklist(
                 id="ageToggle",
                 options=[
@@ -206,6 +232,8 @@ page_1_layout = html.Div(children=[
         ], style={'width': '25%', 'margin-top': '6px'})
     ], style={'display': 'flex'})
 ])
+
+#create layout for list of netflix movies
 netflixBarList = html.Div(children=[
     html.H1(children='PerfectMovie',
             style={
@@ -236,6 +264,7 @@ netflixBarList = html.Div(children=[
 
 ])
 
+#create layout for list of hulu movies
 huluBarList = html.Div(children=[
     html.H1(children='PerfectMovie',
             style={
@@ -266,6 +295,7 @@ huluBarList = html.Div(children=[
 
 ])
 
+#create layout for list of prime video movies
 primeBarList = html.Div(children=[
     html.H1(children='PerfectMovie',
             style={
@@ -296,6 +326,7 @@ primeBarList = html.Div(children=[
 
 ])
 
+#create layout for list of Disney+ movies
 disneyBarList = html.Div(children=[
     html.H1(children='PerfectMovie',
             style={
@@ -326,21 +357,13 @@ disneyBarList = html.Div(children=[
 
 ])
 
-
-@app.callback(Output('genreValue', 'data'),
-              [Input('select-Genre', 'value')])
-def update_genreValue(selected_genre):
-    if selected_genre:
-        print(selected_genre)
-        return selected_genre
-    else:
-        return 'All'
-
+#callback to dynamically update string value under rating filter
 @app.callback(Output('rating-output', 'children'),
               [Input('select-Rating', 'drag_value')])
 def display_value(drag_value):
     return 'More than {}%'.format(drag_value)
 
+#callback to dynamically update string value under runtime range filter
 @app.callback(Output('length-output', 'children'),
               [Input('select-Length', 'drag_value')])
 def display_value(drag_value):
@@ -348,6 +371,7 @@ def display_value(drag_value):
         return 'Between {} and {} mins'.format(0, 0)
     return 'Between {} and {} mins'.format(drag_value[0], drag_value[1])
 
+#callback to dynamically update string value under Year range filter
 @app.callback(Output('year-output', 'children'),
               [Input('select-Age', 'drag_value')])
 def display_value(drag_value):
@@ -355,6 +379,7 @@ def display_value(drag_value):
         return 'Between {} and {} mins'.format(0, 0)
     return 'Created between {} and {}'.format(drag_value[0], drag_value[1])
 
+#callback to create the barchart
 @app.callback(Output('graph1', 'figure'),
               [Input('percentToggle', 'value'),
                Input('select-Genre', 'value'),
