@@ -67,29 +67,28 @@ page_1_layout = html.Div(children=[
     html.H3('Interactive Bar chart', style={'color': '#df1e56'}),
     html.Div('This bar chart represent the number of movies on a given streaming service'),
     dcc.Graph(id='graph1'),
-
-    #create links to list pages#create links to list pages
     html.Div(className='row', children=[
         html.Div(className = 'four columns', children = [
             dcc.Link(
                 html.Button('Show movie List'),
                 href='/netList',
-                style = {"position":"relative", "left":"12.5%"}),
+                style = {"position":"absolute", "left":"12.5%"}),
             dcc.Link(
                 html.Button('Show movie List'),
                 href='/huList',
-                style = {"position":"relative", "left":"28.5%"}),
+                style = {"position":"absolute", "left":"35.3%"}),
             dcc.Link(
                 html.Button('Show movie List'),
                 href='/pvList',
-                style = {"position":"relative", "left":"44.45%"}),
+                style = {"position":"absolute", "left":"58.1%"}),
             dcc.Link(
                 html.Button('Show movie List'),
                 href='/disList',
-                style = {"position":"relative", "left":"60%"})
+                style = {"position":"absolute", "left":"80.5%"})
             ], style = {"position": "relative", "top": "-60px"})
 
     ]),
+
 
     #create percentage toggle
     html.Div(className='toggleRow', children=[
@@ -251,6 +250,7 @@ netflixBarList = html.Div(children=[
     html.Div('This searchable List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
+    #dcc.link(),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -452,7 +452,8 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
         return {'data': data_interactive_barchart,
                 'layout': go.Layout(title='percentage of films on each streaming service matching filter criteria',
                                     xaxis={'title': 'Service'},
-                                    yaxis={'title': 'percentage of films'})}
+                                    yaxis={'title': 'percentage of films'},
+                                    width={"width": "100vh"})}
 
     else:
         data_interactive_barchart = [
