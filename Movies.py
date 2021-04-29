@@ -73,20 +73,21 @@ page_1_layout = html.Div(children=[
         html.Div(className = 'four columns', children = [
             dcc.Link(
                 html.Button('Show movie List'),
-                href='/netList'),
+                href='/netList',
+                style = {"position":"relative", "left":"12.5%"}),
             dcc.Link(
                 html.Button('Show movie List'),
                 href='/huList',
-                style = {"position":"relative", "left":"265px"}),
+                style = {"position":"relative", "left":"28.5%"}),
             dcc.Link(
                 html.Button('Show movie List'),
                 href='/pvList',
-                style = {"position":"relative", "left":"528px"}),
+                style = {"position":"relative", "left":"44.45%"}),
             dcc.Link(
                 html.Button('Show movie List'),
                 href='/disList',
-                style={"position": "relative", "left": "790px"})
-            ], style= {"position":"relative", "left":"210px", "top":"-50px", "bottom": "50px"})
+                style = {"position":"relative", "left":"60%"})
+            ], style = {"position": "relative", "top": "-60px"})
 
     ]),
 
@@ -540,9 +541,6 @@ def filterForBar(df):
 
     return df
 
-"""
-
-"""
 def safeFilterCounts(dataframe, service):
     try:
         filtered_df = dataframe[service].value_counts()[1]
