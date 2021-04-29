@@ -397,7 +397,6 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
     DisneyTotal = safeFilterCounts(filtered_df1, "Disney+")
 
 
-    #filtered_df1 = filtered_df1.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     print(selected_genre)
     print(selected_years)
     print(selected_length)
@@ -492,12 +491,12 @@ def update_table(genVal):
 @app.callback(Output('primeTable', 'data'),
               Input('listGen', 'value'))
 def update_table(genVal):
-    filtered_df1 = df1
+    primefiltered_df1 = df1.copy()
 
     if genVal:
-        filtered_df1 = filterForBar(filtered_df1)
+        primefiltered_df1 = filterForBar(primefiltered_df1)
 
-        primeData = filtered_df1[filtered_df1['Prime Video'] == 1]
+        primeData = primefiltered_df1[primefiltered_df1['Prime Video'] == 1]
         primeData = primeData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
         return primeData
 
@@ -515,15 +514,17 @@ def update_table(genVal):
 
 def filterForBar(df):
     if globalGenre != 'All':
-        df = df1[df1["Genres"].str.contains(globalGenre, na=False)]
+        df = df[df["Genres"].str.contains(globalGenre, na=False)]
 
     if globalYearBool:
         if globalYears:
+            print("GLOBALYEAR: " + str(globalYears[0]) + " " + str(globalYears[1]))
             df = df[
                 (globalYears[0] <= df["Year"]) & (df["Year"] <= globalYears[1])]
 
     if globalLengthBool:
         if globalLengths:
+            print("GLOBALLENGHT: " + str(globalLengths[0]) + " " + str(globalLengths[1]))
             df = df[
                 (df["Runtime"].notna())]
             df = df[
@@ -532,6 +533,7 @@ def filterForBar(df):
 
     if globalRatingBool:
         if globalRating:
+            print("GlobalRating: " + str(globalRating))
             df = df[
                 (df["Rotten Tomatoes"].notna())]
             df = df[
@@ -562,6 +564,26 @@ def display_page(pathname):
     elif pathname == '/disList':
         return disneyBarList
     else:
+        global globalGenre
+        globalGenre = "All"
+
+        global globalRatingBool
+        globalRatingBool = True
+
+        global globalRating
+        globalRating = 0
+        global globalLengthBool
+        globalLengthBool = True
+
+        global globalLengths
+        globalLengths = [0, 1256]
+
+        global yearRangeBool
+        yearRangeBool = None
+
+        global globalYears
+        globalYears = None
+
         return page_1_layout
 
 if __name__ == '__main__':
