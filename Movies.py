@@ -461,7 +461,7 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
                                     xaxis={'title': 'Service'},
                                     yaxis={'title': 'Number of films'})}
 
-
+#callback to update the netflix movie list
 @app.callback(Output('netflixTable', 'data'),
                Input('listGen', 'value'))
 def update_table(genVal):
@@ -474,7 +474,7 @@ def update_table(genVal):
         netflixData = netflixData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
         return netflixData
 
-
+#callback to update the hulu movie list
 @app.callback(Output('huluTable', 'data'),
               Input('listGen', 'value'))
 def update_table(genVal):
@@ -487,7 +487,7 @@ def update_table(genVal):
         huluData = huluData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
         return huluData
 
-
+#callback to update the prime video movie list
 @app.callback(Output('primeTable', 'data'),
               Input('listGen', 'value'))
 def update_table(genVal):
@@ -500,6 +500,7 @@ def update_table(genVal):
         primeData = primeData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
         return primeData
 
+#callback to update the disney movie list
 @app.callback(Output('disneyTable', 'data'),
               Input('listGen', 'value'))
 def update_table(genVal):
@@ -512,19 +513,18 @@ def update_table(genVal):
         disneyData = disneyData[list(set(df1.columns) - set(["Netflix", "Hulu", "Prime Video", "Disney+"]))].to_dict('records')
         return disneyData
 
+#function to filter dataframes
 def filterForBar(df):
     if globalGenre != 'All':
         df = df[df["Genres"].str.contains(globalGenre, na=False)]
 
     if globalYearBool:
         if globalYears:
-            print("GLOBALYEAR: " + str(globalYears[0]) + " " + str(globalYears[1]))
             df = df[
                 (globalYears[0] <= df["Year"]) & (df["Year"] <= globalYears[1])]
 
     if globalLengthBool:
         if globalLengths:
-            print("GLOBALLENGHT: " + str(globalLengths[0]) + " " + str(globalLengths[1]))
             df = df[
                 (df["Runtime"].notna())]
             df = df[
@@ -533,7 +533,6 @@ def filterForBar(df):
 
     if globalRatingBool:
         if globalRating:
-            print("GlobalRating: " + str(globalRating))
             df = df[
                 (df["Rotten Tomatoes"].notna())]
             df = df[
@@ -541,6 +540,9 @@ def filterForBar(df):
 
     return df
 
+"""
+
+"""
 def safeFilterCounts(dataframe, service):
     try:
         filtered_df = dataframe[service].value_counts()[1]
@@ -548,9 +550,7 @@ def safeFilterCounts(dataframe, service):
         filtered_df = 0
     return filtered_df
 
-
-
-
+#callback to change pages
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
@@ -564,6 +564,7 @@ def display_page(pathname):
     elif pathname == '/disList':
         return disneyBarList
     else:
+        #set globals to initial valueswhen initila page is loaded
         global globalGenre
         globalGenre = "All"
 
