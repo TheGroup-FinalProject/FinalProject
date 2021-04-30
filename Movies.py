@@ -169,7 +169,7 @@ page_1_layout = html.Div(children=[
         dcc.Checklist(
             id="percentToggle",
             options=[
-            {'label': 'Toggle Percentage', 'value': 'Percentage'}
+            {'label': 'Show Percentage View', 'value': 'Percentage'}
             ],
             style={'color': '#00284d'}
         )
@@ -180,7 +180,7 @@ page_1_layout = html.Div(children=[
 
         #create minimum rating slider
         html.Div(className = 'four columns', children = [
-            html.Div('Select Minimum Rating',
+            html.Div('Select Minimum Rotten Tomatoes Rating',
                      style={'textAlign': 'center',
                             'color': '#00284d',
                             'font-size': 'medium',
@@ -209,7 +209,7 @@ page_1_layout = html.Div(children=[
             dcc.Checklist(
                 id="ratingToggle",
                 options=[
-                    {'label': 'Toggle Rating', 'value': 'ratingSwitch'}
+                    {'label': 'Apply Rating Filter', 'value': 'ratingSwitch'}
                 ],
                 value=[],
                 style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
@@ -218,7 +218,7 @@ page_1_layout = html.Div(children=[
 
         #create runtime range slider
         html.Div(className = 'four columns', children = [
-            html.Div('Select length range',
+            html.Div('Select Length Range',
                      style={'textAlign': 'center',
                             'color': '#00284d',
                             'font-size': 'medium',
@@ -247,7 +247,7 @@ page_1_layout = html.Div(children=[
             dcc.Checklist(
                 id="lengthToggle",
                 options=[
-                    {'label': 'Toggle Length', 'value': 'lengthSwitch'}
+                    {'label': 'Apply Length Filter', 'value': 'lengthSwitch'}
                 ],
                 value=[],
                 style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
@@ -256,7 +256,7 @@ page_1_layout = html.Div(children=[
 
         #create year range slider
         html.Div(className = 'four columns', children = [
-            html.Div('Select year range',
+            html.Div('Select Year Range',
                      style={'textAlign': 'center',
                             'color': '#00284d',
                             'font-size': 'medium',
@@ -286,7 +286,7 @@ page_1_layout = html.Div(children=[
             dcc.Checklist(
                 id="ageToggle",
                 options=[
-                    {'label': 'Toggle Years', 'value': 'yearSwitch'}
+                    {'label': 'Apply Year Filter', 'value': 'yearSwitch'}
                 ],
                 value=[],
                 style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
