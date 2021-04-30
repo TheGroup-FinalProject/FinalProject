@@ -21,9 +21,30 @@ for genre in genres:
         if singleGenre not in genreList:
             genreList.append(singleGenre)
 
+#create list of separate language
+languages = df1['Language'].unique()
+langList = ["All"]
+for language in languages:
+    try:
+        sep_language = language.split(',')
+    except:
+        pass
+    for singleLanguage in sep_language:
+        if singleLanguage not in langList:
+            langList.append(singleLanguage)
+
+#create list of separate age groups
+ages = df1['Age'].unique()
+ageList = ["All"]
+for age in set(ages)-(set(["all"])):
+    if age not in ageList and not pd.isna(age):
+        #age = age.replace("+", "")
+        ageList.append(age)
+ageList[1:].sort()
+
 #initialize global variables to be used among all pages
 global globalGenre
-globalGenre = "All"
+globalGenre = ["All"]
 
 global globalRatingBool
 globalRatingBool = None
@@ -39,6 +60,12 @@ global globalYearBool
 yearRangeBool = None
 global globalYears
 globalYears = None
+
+global globalLanguage
+globalLanguage = ["All"]
+
+global globalAgeGroup
+globalAgeGroup = ["All"]
 
 
 
@@ -64,8 +91,55 @@ page_1_layout = html.Div(children=[
     html.Br(),
     html.Br(),
     html.Hr(style={'color': '#7FDBFF'}),
-    html.H3('Interactive Bar chart', style={'color': '#df1e56'}),
-    html.Div('This bar chart represent the number of movies on a given streaming service'),
+    html.H3('Filter Categories', style={'color': '#df1e56'}),
+    html.Div(className = 'row', children = [
+
+        # create genre dropdown
+        html.Div(className = 'four columns', children = [
+            dcc.Dropdown(
+                id='select-Genre',
+                options=[
+                    {'label': genre, 'value': genre} for genre in genreList
+                ],
+                multi = True,
+                placeholder='Select Genre...',
+                clearable = False,
+                searchable = True,
+                style = {"background": "#e6f3ff", 'color': '#00284d'}
+            )
+        ], style= {'width': '33%'}),
+
+        # create language dropdown
+        html.Div(className='four columns', children=[
+            dcc.Dropdown(
+                id='select-Language',
+                options=[
+                    {'label': language, 'value': language} for language in langList
+                ],
+                multi = True,
+                placeholder='Select Language...',
+                clearable=False,
+                searchable=True,
+                style = {"background": "#e6f3ff", 'color': '#00284d'}
+            )
+        ], style={'width': '33%'}),
+
+        # create age dropdown
+        html.Div(className='four columns', children=[
+            dcc.Dropdown(
+                id='select-Age-Group',
+                options=[
+                    {'label': age, 'value': age} for age in ageList
+                ],
+                multi= True,
+                placeholder='Select Age Group...',
+                clearable=False,
+                searchable=True,
+                style={"background": "#e6f3ff", 'color': '#00284d'}
+            )
+        ], style={'width': '33%'}),
+
+	], style={'display': 'flex'}),
     dcc.Graph(id='graph1'),
     html.Div(className='row', children=[
         html.Div(className = 'four columns', children = [
@@ -96,31 +170,19 @@ page_1_layout = html.Div(children=[
             id="percentToggle",
             options=[
             {'label': 'Toggle Percentage', 'value': 'Percentage'}
-            ]
+            ],
+            style={'color': '#00284d'}
         )
     ]),
 
     #create filters
     html.Div(className = 'row', children = [
 
-        #create genre dropdown
-        html.Div(className = 'four columns', children = [
-            dcc.Dropdown(
-                id='select-Genre',
-                options=[
-                    {'label': genre, 'value': genre} for genre in genreList
-                ],
-                placeholder='Select Genre...',
-                clearable = False,
-                searchable = True
-            )
-        ], style= {'width': '25%', 'margin-top': '6px'}),
-
         #create minimum rating slider
         html.Div(className = 'four columns', children = [
             html.Div('Select Minimum Rating',
                      style={'textAlign': 'center',
-                            'color': '#A9A9A9',
+                            'color': '#00284d',
                             'font-size': 'medium',
                             'margin-bottom': '6px'}),
             dcc.Slider(
@@ -139,7 +201,7 @@ page_1_layout = html.Div(children=[
                 included = True
             ),
             html.Div(id='rating-output', style={'textAlign': 'center',
-                                                'color': '#A9A9A9',
+                                                'color': '#00284d',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
 
@@ -149,16 +211,16 @@ page_1_layout = html.Div(children=[
                 options=[
                     {'label': 'Toggle Rating', 'value': 'ratingSwitch'}
                 ],
-                value=['ratingSwitch'],
-                style={'textAlign': 'center'}
+                value=[],
+                style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
             )
-        ], style={'width': '25%', 'margin-top': '6px'}),
+        ], style={'width': '33%', 'margin-top': '6px'}),
 
         #create runtime range slider
         html.Div(className = 'four columns', children = [
             html.Div('Select length range',
                      style={'textAlign': 'center',
-                            'color': '#A9A9A9',
+                            'color': '#00284d',
                             'font-size': 'medium',
                             'margin-bottom': '6px'}),
             dcc.RangeSlider(
@@ -178,7 +240,7 @@ page_1_layout = html.Div(children=[
                 allowCross=False
             ),
             html.Div(id='length-output', style={'textAlign': 'center',
-                                                'color': '#A9A9A9',
+                                                'color': '#00284d',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
             #create toggle for runtime range filter
@@ -187,16 +249,16 @@ page_1_layout = html.Div(children=[
                 options=[
                     {'label': 'Toggle Length', 'value': 'lengthSwitch'}
                 ],
-                value=['lengthSwitch'],
-                style={'textAlign': 'center'}
+                value=[],
+                style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
             )
-        ], style= {'width': '25%', 'margin-top': '6px'}),
+        ], style= {'width': '33%', 'margin-top': '6px'}),
 
         #create year range slider
         html.Div(className = 'four columns', children = [
             html.Div('Select year range',
                      style={'textAlign': 'center',
-                            'color': '#A9A9A9',
+                            'color': '#00284d',
                             'font-size': 'medium',
                             'margin-bottom': '6px'}),
             dcc.RangeSlider(
@@ -216,7 +278,7 @@ page_1_layout = html.Div(children=[
                 allowCross = False
             ),
             html.Div(id='year-output', style={'textAlign': 'center',
-                                                'color': '#A9A9A9',
+                                                'color': '#00284d',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
 
@@ -226,10 +288,10 @@ page_1_layout = html.Div(children=[
                 options=[
                     {'label': 'Toggle Years', 'value': 'yearSwitch'}
                 ],
-                value=['yearSwitch'],
-                style={'textAlign': 'center'}
+                value=[],
+                style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
             )
-        ], style={'width': '25%', 'margin-top': '6px'})
+        ], style={'width': '33%', 'margin-top': '6px'})
     ], style={'display': 'flex'})
 ])
 
@@ -247,10 +309,13 @@ netflixBarList = html.Div(children=[
     html.Br(),
     html.Hr(style={'color': '#7FDBFF'}),
     html.H3('Netflix Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
-    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Div('This List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
-    #dcc.link(),
+    dcc.Link(
+        html.Button('Back to graph page'),
+        href='/',
+        style={"position": "absolute", "left": "12.5%"}),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -389,8 +454,10 @@ def display_value(drag_value):
                Input('select-Rating', 'drag_value'),
                Input('ratingToggle', 'value'),
                Input('lengthToggle', 'value'),
-               Input('ageToggle', 'value')])
-def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating, toggle_rating, toggle_length, toggle_age):
+               Input('ageToggle', 'value'),
+               Input('select-Language', 'value'),
+               Input('select-Age-Group', 'value')])
+def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating, toggle_rating, toggle_length, toggle_age, selected_language, selected_age):
     filtered_df1 = df1
     NetflixTotal = safeFilterCounts(filtered_df1, "Netflix")
     HuluTotal = safeFilterCounts(filtered_df1, "Hulu")
@@ -402,11 +469,27 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
     print(selected_years)
     print(selected_length)
     print(selected_rating)
+    print(selected_language)
     if selected_genre:
-        if selected_genre != 'All':
+        if "All" not in selected_genre:
             global globalGenre
             globalGenre = selected_genre
-            filtered_df1 = df1[df1["Genres"].str.contains(selected_genre, na=False)]
+            for genre in selected_genre:
+                filtered_df1 = filtered_df1[filtered_df1["Genres"].str.contains(genre, na=False)]
+
+    if selected_language:
+        if "All" not in selected_language:
+            global globalLanguage
+            globalLanguage = selected_language
+            for language in selected_language:
+                filtered_df1 = filtered_df1[filtered_df1["Language"].str.contains(language, na=False)]
+
+    if selected_age:
+        if "All" not in selected_age:
+            global globalAgeGroup
+            globalAgeGroup = selected_age
+            for age in selected_age:
+                filtered_df1 = filtered_df1[filtered_df1["Age"].str.contains(age, na=False)]
 
     if toggle_age:
         global globalYearBool
@@ -452,8 +535,7 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
         return {'data': data_interactive_barchart,
                 'layout': go.Layout(title='percentage of films on each streaming service matching filter criteria',
                                     xaxis={'title': 'Service'},
-                                    yaxis={'title': 'percentage of films'},
-                                    width={"width": "100vh"})}
+                                    yaxis={'title': 'percentage of films'})}
 
     else:
         data_interactive_barchart = [
@@ -517,8 +599,17 @@ def update_table(genVal):
 
 #function to filter dataframes
 def filterForBar(df):
-    if globalGenre != 'All':
-        df = df[df["Genres"].str.contains(globalGenre, na=False)]
+    if "All" not in globalGenre:
+        for genre in globalGenre:
+            df = df[df["Genres"].str.contains(genre, na=False)]
+
+    if "All" not in globalLanguage:
+        for language in globalLanguage:
+            df = df[df["Language"].str.contains(language, na=False)]
+
+    if "All" not in globalAgeGroup:
+        for age in globalAgeGroup:
+            df = df[df["Age"].str.contains(age, na=False)]
 
     if globalYearBool:
         if globalYears:
@@ -565,24 +656,29 @@ def display_page(pathname):
     else:
         #set globals to initial valueswhen initila page is loaded
         global globalGenre
-        globalGenre = "All"
+        globalGenre = ["All"]
 
         global globalRatingBool
-        globalRatingBool = True
+        globalRatingBool = False
 
         global globalRating
         globalRating = 0
         global globalLengthBool
-        globalLengthBool = True
+        globalLengthBool = False
 
         global globalLengths
         globalLengths = [0, 1256]
 
-        global yearRangeBool
-        yearRangeBool = None
-
+        global globalYearBool
+        globalYearBool = False
         global globalYears
         globalYears = None
+
+        global globalLanguage
+        globalLanguage = ["All"]
+
+        global globalAgeGroup
+        globalAgeGroup = ["All"]
 
         return page_1_layout
 
