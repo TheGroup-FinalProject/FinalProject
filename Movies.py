@@ -78,6 +78,93 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
+#home page layout
+home_page = html.Div(children=[
+    html.H1(className = 'center',children='PerfectMovie',
+        style={
+            'textAlign': 'center',
+            'color': '#ef3e18'
+        }
+    ),
+    html.Div(children=[
+        dcc.Link(
+            html.Button(children=[
+                html.Img(
+                    src=app.get_asset_url('go.png'),
+                    style={'width':'30%'}
+                ),
+                html.Div("Press Go to start",
+                         style={'font-family': 'Courier New', 'font-weight': 'bold', 'font-size':'15px', 'color': '#00284d'})],
+                style={'background': 'transparent', 'border':'0'}
+            ),
+            href='/mainPage')
+    ], style= {'textAlign': 'center'}),
+    html.Div(className='row', children=[
+        html.Div(className= 'column', children=[
+            html.Div(children=[html.Div(className= 'listHeader', children="About: "),
+                               html.Ul(children=[
+                                   html.Li(children= "This web application utilizes a "
+                                                                            "Kaggle database based on movie "
+                                                                            "records from the four most popular streaming services"),
+                                   html.Li(className='listIndent0',
+                                           children= "Netflix, Hulu, Prime Video, Disney+")
+                               ])],
+                     style={'margin-top':'15%', 'font-family': 'Courier New'}
+             ),
+            html.Div(children=[html.Div(className= 'listHeader', children="The Goal: "),
+                               html.Ul(children=[
+                                   html.Li(className='nextItem',
+                                           children='The goal of this web application is to provide you, the user, with important '
+                                                    'information regarding the types of movies on popular streaming services and '
+                                                    'help you make a more informed decision on which streaming service may be best for you')
+                               ])],
+                     style={'margin-top': '8%', 'font-family': 'Courier New'}
+            )
+        ]),
+        html.Div(className= 'column', children=[
+            html.Div(children=[html.Div(className='listHeader', children="The Elements: "),
+                               html.Ul(children=[
+                                   html.Li(children= "The elements of the graph page can effectively be broken into three categories"),
+                                   html.Li(className='listIndent0',
+                                           children= html.P(children=["The ", html.Span(className='listHeader', children="Bar Graph"),
+                                                                      " is used to display the amount of movies on "
+                                                                      "each streaming service corresponding to the filter setting which are set. "
+                                                                      "This element is found in the middle of the screen"])
+                                           ),
+                                   html.Li(className='listIndent0',
+                                           children=html.P(
+                                               children=["The ", html.Span(className='listHeader', children="6 Filters"),
+                                                         " are used to manipulate which data will be found in the bar graph. "
+                                                         "Each filter corresponds to a different data value associated with each movie."
+                                                         "Three filters are in the form of dropdowns and can be found above the bar graph. "
+                                                         "The other three filters are in the form of sliders and can be found under the bar graph"])
+                                           ),
+                                   html.Li(className='listIndent0',
+                                           children=html.P(
+                                               children=["The ", html.Span(className='listHeader', children="Toggle Checkboxes"),
+                                                         " are used to turn specific sliders on and off as well as toggle the percentage view of the bar graph. "
+                                                         "The toggle checkboxes found under each slider filter can be used to turn the corresponding filter on or off."
+                                                         "The 'Show Percentage View' toggle checkbox can be used to show the bar graoh as a percentage, "
+                                                         "meaning each bar in the bar graph shows the percentage of movies matching the filter "
+                                                         "criteria with respect to the total number of movies on ech streaming service. "
+                                                         "When a Toggle Checkbox is checked, it means the value is set to 'on'"])
+                                           )
+
+                               ])],
+                     style={'margin-top': '15%', 'font-family': 'Courier New'}
+            )
+        ])
+
+    ]),
+    html.Img(
+        src=app.get_asset_url('streaming.png'),
+        style={'display': 'block', 'margin-left': 'auto', 'margin-top': '5%','margin-right': 'auto' , 'width':'75%'}
+    )
+
+
+], style={'background-color': '#D3D3D3', 'position':'relative', 'width':'100%', 'height':'100%'})
+
+
 #main page layout
 page_1_layout = html.Div(children=[
     html.H1(children='PerfectMovie',
@@ -88,14 +175,26 @@ page_1_layout = html.Div(children=[
             ),
     html.Div('Web dashboard for Data Visualization using Python', style={'textAlign': 'center'}),
     html.Div('Streaming Service records', style={'textAlign': 'center'}),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to home",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/'
+    ),
     html.Br(),
     html.Br(),
     html.Hr(style={'color': '#7FDBFF'}),
-    html.H3('Filter Categories', style={'color': '#df1e56'}),
-    html.Div(className = 'row', children = [
+    html.H3('Filter Categories', style={'color': '#00284d'}),
+    html.Div(children = [
 
         # create genre dropdown
-        html.Div(className = 'four columns', children = [
+        html.Div(children = [
             dcc.Dropdown(
                 id='select-Genre',
                 options=[
@@ -110,7 +209,7 @@ page_1_layout = html.Div(children=[
         ], style= {'width': '33%'}),
 
         # create language dropdown
-        html.Div(className='four columns', children=[
+        html.Div(children=[
             dcc.Dropdown(
                 id='select-Language',
                 options=[
@@ -125,7 +224,7 @@ page_1_layout = html.Div(children=[
         ], style={'width': '33%'}),
 
         # create age dropdown
-        html.Div(className='four columns', children=[
+        html.Div(children=[
             dcc.Dropdown(
                 id='select-Age-Group',
                 options=[
@@ -140,28 +239,30 @@ page_1_layout = html.Div(children=[
         ], style={'width': '33%'}),
 
 	], style={'display': 'flex'}),
-    dcc.Graph(id='graph1'),
-    html.Div(className='row', children=[
-        html.Div(className = 'four columns', children = [
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/netList',
-                style = {"position":"absolute", "left":"12.5%"}),
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/huList',
-                style = {"position":"absolute", "left":"35.3%"}),
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/pvList',
-                style = {"position":"absolute", "left":"58.1%"}),
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/disList',
-                style = {"position":"absolute", "left":"80.5%"})
-            ], style = {"position": "relative", "top": "-60px"})
+    html.Div(children= [
+        dcc.Graph(id='graph1'),
+            html.Div(children=[
+                html.Div(className = 'four columns', children = [
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/netList',
+                        style = {"position":"absolute", "left":"12.5%", 'width':'7%'}),
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/huList',
+                        style = {"position":"absolute", "left":"35.3%", 'width':'7%'}),
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/pvList',
+                        style = {"position":"absolute", "left":"58.1%", 'width':'7%'}),
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/disList',
+                        style = {"position":"absolute", "left":"80.5%", 'width':'7%'})
+                    ], style = {"position": "relative", "top": "-60px"})
 
-    ]),
+    ])
+    ], style={'textAlign':'center', 'width': '100%'}),
 
 
     #create percentage toggle
@@ -176,10 +277,10 @@ page_1_layout = html.Div(children=[
     ]),
 
     #create filters
-    html.Div(className = 'row', children = [
+    html.Div(children = [
 
         #create minimum rating slider
-        html.Div(className = 'four columns', children = [
+        html.Div(children = [
             html.Div('Select Minimum Rotten Tomatoes Rating',
                      style={'textAlign': 'center',
                             'color': '#00284d',
@@ -217,7 +318,7 @@ page_1_layout = html.Div(children=[
         ], style={'width': '33%', 'margin-top': '6px'}),
 
         #create runtime range slider
-        html.Div(className = 'four columns', children = [
+        html.Div(children = [
             html.Div('Select Length Range',
                      style={'textAlign': 'center',
                             'color': '#00284d',
@@ -255,7 +356,7 @@ page_1_layout = html.Div(children=[
         ], style= {'width': '33%', 'margin-top': '6px'}),
 
         #create year range slider
-        html.Div(className = 'four columns', children = [
+        html.Div(children = [
             html.Div('Select Year Range',
                      style={'textAlign': 'center',
                             'color': '#00284d',
@@ -313,9 +414,17 @@ netflixBarList = html.Div(children=[
     html.Br(),
     html.Br(),
     dcc.Link(
-        html.Button('Back to graph page'),
-        href='/',
-        style={"position": "absolute", "left": "12.5%"}),
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to graph",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -347,6 +456,18 @@ huluBarList = html.Div(children=[
     html.Div('This searchable List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to graph",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -378,6 +499,18 @@ primeBarList = html.Div(children=[
     html.Div('This searchable List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to home",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -409,6 +542,18 @@ disneyBarList = html.Div(children=[
     html.Div('This searchable List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to home",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -653,8 +798,8 @@ def display_page(pathname):
         return primeBarList
     elif pathname == '/disList':
         return disneyBarList
-    else:
-        #set globals to initial valueswhen initila page is loaded
+    elif pathname == '/mainPage':
+        #set globals to initial values when initial page is loaded
         global globalGenre
         globalGenre = ["All"]
 
@@ -681,6 +826,8 @@ def display_page(pathname):
         globalAgeGroup = ["All"]
 
         return page_1_layout
+    else:
+        return home_page
 
 if __name__ == '__main__':
     app.run_server()
