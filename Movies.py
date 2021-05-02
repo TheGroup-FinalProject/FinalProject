@@ -21,9 +21,30 @@ for genre in genres:
         if singleGenre not in genreList:
             genreList.append(singleGenre)
 
+#create list of separate language
+languages = df1['Language'].unique()
+langList = ["All"]
+for language in languages:
+    try:
+        sep_language = language.split(',')
+    except:
+        pass
+    for singleLanguage in sep_language:
+        if singleLanguage not in langList:
+            langList.append(singleLanguage)
+
+#create list of separate age groups
+ages = df1['Age'].unique()
+ageList = ["All"]
+for age in set(ages)-(set(["all"])):
+    if age not in ageList and not pd.isna(age):
+        #age = age.replace("+", "")
+        ageList.append(age)
+ageList[1:].sort()
+
 #initialize global variables to be used among all pages
 global globalGenre
-globalGenre = "All"
+globalGenre = ["All"]
 
 global globalRatingBool
 globalRatingBool = None
@@ -40,6 +61,12 @@ yearRangeBool = None
 global globalYears
 globalYears = None
 
+global globalLanguage
+globalLanguage = ["All"]
+
+global globalAgeGroup
+globalAgeGroup = ["All"]
+
 
 
 app = dash.Dash(__name__)
@@ -51,6 +78,93 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
+#home page layout
+home_page = html.Div(children=[
+    html.H1(className = 'center',children='PerfectMovie',
+        style={
+            'textAlign': 'center',
+            'color': '#ef3e18'
+        }
+    ),
+    html.Div(children=[
+        dcc.Link(
+            html.Button(children=[
+                html.Img(
+                    src=app.get_asset_url('go.png'),
+                    style={'width':'30%'}
+                ),
+                html.Div("Press Go to start",
+                         style={'font-family': 'Courier New', 'font-weight': 'bold', 'font-size':'15px', 'color': '#00284d'})],
+                style={'background': 'transparent', 'border':'0'}
+            ),
+            href='/mainPage')
+    ], style= {'textAlign': 'center'}),
+    html.Div(className='row', children=[
+        html.Div(className= 'column', children=[
+            html.Div(children=[html.Div(className= 'listHeader', children="About: "),
+                               html.Ul(children=[
+                                   html.Li(children= "This web application utilizes a "
+                                                                            "Kaggle database based on movie "
+                                                                            "records from the four most popular streaming services"),
+                                   html.Li(className='listIndent0',
+                                           children= "Netflix, Hulu, Prime Video, Disney+")
+                               ])],
+                     style={'margin-top':'15%', 'font-family': 'Courier New'}
+             ),
+            html.Div(children=[html.Div(className= 'listHeader', children="The Goal: "),
+                               html.Ul(children=[
+                                   html.Li(className='nextItem',
+                                           children='The goal of this web application is to provide you, the user, with important '
+                                                    'information regarding the types of movies on popular streaming services and '
+                                                    'help you make a more informed decision on which streaming service may be best for you')
+                               ])],
+                     style={'margin-top': '8%', 'font-family': 'Courier New'}
+            )
+        ]),
+        html.Div(className= 'column', children=[
+            html.Div(children=[html.Div(className='listHeader', children="The Elements: "),
+                               html.Ul(children=[
+                                   html.Li(children= "The elements of the graph page can effectively be broken into three categories"),
+                                   html.Li(className='listIndent0',
+                                           children= html.P(children=["The ", html.Span(className='listHeader', children="Bar Graph"),
+                                                                      " is used to display the amount of movies on "
+                                                                      "each streaming service corresponding to the filter setting which are set. "
+                                                                      "This element is found in the middle of the screen"])
+                                           ),
+                                   html.Li(className='listIndent0',
+                                           children=html.P(
+                                               children=["The ", html.Span(className='listHeader', children="6 Filters"),
+                                                         " are used to manipulate which data will be found in the bar graph. "
+                                                         "Each filter corresponds to a different data value associated with each movie."
+                                                         "Three filters are in the form of dropdowns and can be found above the bar graph. "
+                                                         "The other three filters are in the form of sliders and can be found under the bar graph"])
+                                           ),
+                                   html.Li(className='listIndent0',
+                                           children=html.P(
+                                               children=["The ", html.Span(className='listHeader', children="Toggle Checkboxes"),
+                                                         " are used to turn specific sliders on and off as well as toggle the percentage view of the bar graph. "
+                                                         "The toggle checkboxes found under each slider filter can be used to turn the corresponding filter on or off."
+                                                         "The 'Show Percentage View' toggle checkbox can be used to show the bar graoh as a percentage, "
+                                                         "meaning each bar in the bar graph shows the percentage of movies matching the filter "
+                                                         "criteria with respect to the total number of movies on ech streaming service. "
+                                                         "When a Toggle Checkbox is checked, it means the value is set to 'on'"])
+                                           )
+
+                               ])],
+                     style={'margin-top': '15%', 'font-family': 'Courier New'}
+            )
+        ])
+
+    ]),
+    html.Img(
+        src=app.get_asset_url('streaming.png'),
+        style={'display': 'block', 'margin-left': 'auto', 'margin-top': '5%','margin-right': 'auto' , 'width':'75%'}
+    )
+
+
+], style={'background-color': '#D3D3D3', 'position':'relative', 'width':'100%', 'height':'100%'})
+
+
 #main page layout
 page_1_layout = html.Div(children=[
     html.H1(children='PerfectMovie',
@@ -61,33 +175,94 @@ page_1_layout = html.Div(children=[
             ),
     html.Div('Web dashboard for Data Visualization using Python', style={'textAlign': 'center'}),
     html.Div('Streaming Service records', style={'textAlign': 'center'}),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to home",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/'
+    ),
     html.Br(),
     html.Br(),
     html.Hr(style={'color': '#7FDBFF'}),
-    html.H3('Interactive Bar chart', style={'color': '#df1e56'}),
-    html.Div('This bar chart represent the number of movies on a given streaming service'),
-    dcc.Graph(id='graph1'),
-    html.Div(className='row', children=[
-        html.Div(className = 'four columns', children = [
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/netList',
-                style = {"position":"absolute", "left":"12.5%"}),
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/huList',
-                style = {"position":"absolute", "left":"35.3%"}),
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/pvList',
-                style = {"position":"absolute", "left":"58.1%"}),
-            dcc.Link(
-                html.Button('Show movie List'),
-                href='/disList',
-                style = {"position":"absolute", "left":"80.5%"})
-            ], style = {"position": "relative", "top": "-60px"})
+    html.H3('Filter Categories', style={'color': '#00284d'}),
+    html.Div(children = [
 
-    ]),
+        # create genre dropdown
+        html.Div(children = [
+            dcc.Dropdown(
+                id='select-Genre',
+                options=[
+                    {'label': genre, 'value': genre} for genre in genreList
+                ],
+                multi = True,
+                placeholder='Select Genre...',
+                clearable = False,
+                searchable = True,
+                style = {"background": "#e6f3ff", 'color': '#00284d'}
+            )
+        ], style= {'width': '33%'}),
+
+        # create language dropdown
+        html.Div(children=[
+            dcc.Dropdown(
+                id='select-Language',
+                options=[
+                    {'label': language, 'value': language} for language in langList
+                ],
+                multi = True,
+                placeholder='Select Language...',
+                clearable=False,
+                searchable=True,
+                style = {"background": "#e6f3ff", 'color': '#00284d'}
+            )
+        ], style={'width': '33%'}),
+
+        # create age dropdown
+        html.Div(children=[
+            dcc.Dropdown(
+                id='select-Age-Group',
+                options=[
+                    {'label': age, 'value': age} for age in ageList
+                ],
+                multi= True,
+                placeholder='Select Age Group...',
+                clearable=False,
+                searchable=True,
+                style={"background": "#e6f3ff", 'color': '#00284d'}
+            )
+        ], style={'width': '33%'}),
+
+	], style={'display': 'flex'}),
+    html.Div(children= [
+        dcc.Graph(id='graph1'),
+            html.Div(children=[
+                html.Div(className = 'four columns', children = [
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/netList',
+                        style = {"position":"absolute", "left":"12.5%", 'width':'7%'}),
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/huList',
+                        style = {"position":"absolute", "left":"35.3%", 'width':'7%'}),
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/pvList',
+                        style = {"position":"absolute", "left":"58.1%", 'width':'7%'}),
+                    dcc.Link(
+                        html.Button('Show movie List', style={'width':'100%'}),
+                        href='/disList',
+                        style = {"position":"absolute", "left":"80.5%", 'width':'7%'})
+                    ], style = {"position": "relative", "top": "-60px"})
+
+    ])
+    ], style={'textAlign':'center', 'width': '100%'}),
 
 
     #create percentage toggle
@@ -95,32 +270,20 @@ page_1_layout = html.Div(children=[
         dcc.Checklist(
             id="percentToggle",
             options=[
-            {'label': 'Toggle Percentage', 'value': 'Percentage'}
-            ]
+            {'label': 'Show Percentage View', 'value': 'Percentage'}
+            ],
+            style={'color': '#00284d'}
         )
     ]),
 
     #create filters
-    html.Div(className = 'row', children = [
-
-        #create genre dropdown
-        html.Div(className = 'four columns', children = [
-            dcc.Dropdown(
-                id='select-Genre',
-                options=[
-                    {'label': genre, 'value': genre} for genre in genreList
-                ],
-                placeholder='Select Genre...',
-                clearable = False,
-                searchable = True
-            )
-        ], style= {'width': '25%', 'margin-top': '6px'}),
+    html.Div(children = [
 
         #create minimum rating slider
-        html.Div(className = 'four columns', children = [
-            html.Div('Select Minimum Rating',
+        html.Div(children = [
+            html.Div('Select Minimum Rotten Tomatoes Rating',
                      style={'textAlign': 'center',
-                            'color': '#A9A9A9',
+                            'color': '#00284d',
                             'font-size': 'medium',
                             'margin-bottom': '6px'}),
             dcc.Slider(
@@ -139,7 +302,7 @@ page_1_layout = html.Div(children=[
                 included = True
             ),
             html.Div(id='rating-output', style={'textAlign': 'center',
-                                                'color': '#A9A9A9',
+                                                'color': '#00284d',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
 
@@ -147,18 +310,18 @@ page_1_layout = html.Div(children=[
             dcc.Checklist(
                 id="ratingToggle",
                 options=[
-                    {'label': 'Toggle Rating', 'value': 'ratingSwitch'}
+                    {'label': 'Apply Rating Filter', 'value': 'ratingSwitch'}
                 ],
-                value=['ratingSwitch'],
-                style={'textAlign': 'center'}
+                value=[],
+                style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
             )
-        ], style={'width': '25%', 'margin-top': '6px'}),
+        ], style={'width': '33%', 'margin-top': '6px'}),
 
         #create runtime range slider
-        html.Div(className = 'four columns', children = [
-            html.Div('Select length range',
+        html.Div(children = [
+            html.Div('Select Length Range',
                      style={'textAlign': 'center',
-                            'color': '#A9A9A9',
+                            'color': '#00284d',
                             'font-size': 'medium',
                             'margin-bottom': '6px'}),
             dcc.RangeSlider(
@@ -178,25 +341,25 @@ page_1_layout = html.Div(children=[
                 allowCross=False
             ),
             html.Div(id='length-output', style={'textAlign': 'center',
-                                                'color': '#A9A9A9',
+                                                'color': '#00284d',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
             #create toggle for runtime range filter
             dcc.Checklist(
                 id="lengthToggle",
                 options=[
-                    {'label': 'Toggle Length', 'value': 'lengthSwitch'}
+                    {'label': 'Apply Length Filter', 'value': 'lengthSwitch'}
                 ],
-                value=['lengthSwitch'],
-                style={'textAlign': 'center'}
+                value=[],
+                style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
             )
-        ], style= {'width': '25%', 'margin-top': '6px'}),
+        ], style= {'width': '33%', 'margin-top': '6px'}),
 
         #create year range slider
-        html.Div(className = 'four columns', children = [
-            html.Div('Select year range',
+        html.Div(children = [
+            html.Div('Select Year Range',
                      style={'textAlign': 'center',
-                            'color': '#A9A9A9',
+                            'color': '#00284d',
                             'font-size': 'medium',
                             'margin-bottom': '6px'}),
             dcc.RangeSlider(
@@ -216,7 +379,7 @@ page_1_layout = html.Div(children=[
                 allowCross = False
             ),
             html.Div(id='year-output', style={'textAlign': 'center',
-                                                'color': '#A9A9A9',
+                                                'color': '#00284d',
                                                 'font-size': 'medium',
                                                 'margin-bottom': '6px'}),
 
@@ -224,12 +387,12 @@ page_1_layout = html.Div(children=[
             dcc.Checklist(
                 id="ageToggle",
                 options=[
-                    {'label': 'Toggle Years', 'value': 'yearSwitch'}
+                    {'label': 'Apply Year Filter', 'value': 'yearSwitch'}
                 ],
-                value=['yearSwitch'],
-                style={'textAlign': 'center'}
+                value=[],
+                style={'textAlign': 'center', 'color': '#00284d', 'font-weight':'bold'}
             )
-        ], style={'width': '25%', 'margin-top': '6px'})
+        ], style={'width': '33%', 'margin-top': '6px'})
     ], style={'display': 'flex'})
 ])
 
@@ -247,10 +410,21 @@ netflixBarList = html.Div(children=[
     html.Br(),
     html.Hr(style={'color': '#7FDBFF'}),
     html.H3('Netflix Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
-    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Div('This List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
-    #dcc.link(),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to graph",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -282,6 +456,18 @@ huluBarList = html.Div(children=[
     html.Div('This searchable List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to graph",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -313,6 +499,18 @@ primeBarList = html.Div(children=[
     html.Div('This searchable List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to home",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -344,6 +542,18 @@ disneyBarList = html.Div(children=[
     html.Div('This searchable List represents all movies given your search criteria on netflix'),
     html.Br(),
     html.Br(),
+    dcc.Link(
+        html.Button(children=[
+            html.Img(
+                src=app.get_asset_url('back.png'),
+                style={'width': '30%'}
+            ),
+            html.Div("Back to home",
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+        ),
+        href='/mainPage'
+    ),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -389,8 +599,10 @@ def display_value(drag_value):
                Input('select-Rating', 'drag_value'),
                Input('ratingToggle', 'value'),
                Input('lengthToggle', 'value'),
-               Input('ageToggle', 'value')])
-def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating, toggle_rating, toggle_length, toggle_age):
+               Input('ageToggle', 'value'),
+               Input('select-Language', 'value'),
+               Input('select-Age-Group', 'value')])
+def update_figure(togglePercentage, selected_genre, selected_years, selected_length, selected_rating, toggle_rating, toggle_length, toggle_age, selected_language, selected_age):
     filtered_df1 = df1
     NetflixTotal = safeFilterCounts(filtered_df1, "Netflix")
     HuluTotal = safeFilterCounts(filtered_df1, "Hulu")
@@ -402,11 +614,27 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
     print(selected_years)
     print(selected_length)
     print(selected_rating)
+    print(selected_language)
     if selected_genre:
-        if selected_genre != 'All':
+        if "All" not in selected_genre:
             global globalGenre
             globalGenre = selected_genre
-            filtered_df1 = df1[df1["Genres"].str.contains(selected_genre, na=False)]
+            for genre in selected_genre:
+                filtered_df1 = filtered_df1[filtered_df1["Genres"].str.contains(genre, na=False)]
+
+    if selected_language:
+        if "All" not in selected_language:
+            global globalLanguage
+            globalLanguage = selected_language
+            for language in selected_language:
+                filtered_df1 = filtered_df1[filtered_df1["Language"].str.contains(language, na=False)]
+
+    if selected_age:
+        if "All" not in selected_age:
+            global globalAgeGroup
+            globalAgeGroup = selected_age
+            for age in selected_age:
+                filtered_df1 = filtered_df1[filtered_df1["Age"].str.contains(age, na=False)]
 
     if toggle_age:
         global globalYearBool
@@ -452,8 +680,7 @@ def update_figure(togglePercentage, selected_genre, selected_years, selected_len
         return {'data': data_interactive_barchart,
                 'layout': go.Layout(title='percentage of films on each streaming service matching filter criteria',
                                     xaxis={'title': 'Service'},
-                                    yaxis={'title': 'percentage of films'},
-                                    width={"width": "100vh"})}
+                                    yaxis={'title': 'percentage of films'})}
 
     else:
         data_interactive_barchart = [
@@ -517,8 +744,17 @@ def update_table(genVal):
 
 #function to filter dataframes
 def filterForBar(df):
-    if globalGenre != 'All':
-        df = df[df["Genres"].str.contains(globalGenre, na=False)]
+    if "All" not in globalGenre:
+        for genre in globalGenre:
+            df = df[df["Genres"].str.contains(genre, na=False)]
+
+    if "All" not in globalLanguage:
+        for language in globalLanguage:
+            df = df[df["Language"].str.contains(language, na=False)]
+
+    if "All" not in globalAgeGroup:
+        for age in globalAgeGroup:
+            df = df[df["Age"].str.contains(age, na=False)]
 
     if globalYearBool:
         if globalYears:
@@ -562,29 +798,36 @@ def display_page(pathname):
         return primeBarList
     elif pathname == '/disList':
         return disneyBarList
-    else:
-        #set globals to initial valueswhen initila page is loaded
+    elif pathname == '/mainPage':
+        #set globals to initial values when initial page is loaded
         global globalGenre
-        globalGenre = "All"
+        globalGenre = ["All"]
 
         global globalRatingBool
-        globalRatingBool = True
+        globalRatingBool = False
 
         global globalRating
         globalRating = 0
         global globalLengthBool
-        globalLengthBool = True
+        globalLengthBool = False
 
         global globalLengths
         globalLengths = [0, 1256]
 
-        global yearRangeBool
-        yearRangeBool = None
-
+        global globalYearBool
+        globalYearBool = False
         global globalYears
         globalYears = None
 
+        global globalLanguage
+        globalLanguage = ["All"]
+
+        global globalAgeGroup
+        globalAgeGroup = ["All"]
+
         return page_1_layout
+    else:
+        return home_page
 
 if __name__ == '__main__':
     app.run_server()
