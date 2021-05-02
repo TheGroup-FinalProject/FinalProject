@@ -175,6 +175,8 @@ page_1_layout = html.Div(children=[
             ),
     html.Div('Web dashboard for Data Visualization using Python', style={'textAlign': 'center'}),
     html.Div('Streaming Service records', style={'textAlign': 'center'}),
+    html.Br(),
+    html.Br(),
     dcc.Link(
         html.Button(children=[
             html.Img(
@@ -182,13 +184,11 @@ page_1_layout = html.Div(children=[
                 style={'width': '30%'}
             ),
             html.Div("Back to home",
-                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
-            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign': 'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left': '5%'}
         ),
         href='/'
     ),
-    html.Br(),
-    html.Br(),
     html.Hr(style={'color': '#7FDBFF'}),
     html.H3('Filter Categories', style={'color': '#00284d'}),
     html.Div(children = [
@@ -408,11 +408,6 @@ netflixBarList = html.Div(children=[
     html.Div('Streaming Service records', style={'textAlign': 'center'}),
     html.Br(),
     html.Br(),
-    html.Hr(style={'color': '#7FDBFF'}),
-    html.H3('Netflix Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
-    html.Div('This List represents all movies given your search criteria on netflix'),
-    html.Br(),
-    html.Br(),
     dcc.Link(
         html.Button(children=[
             html.Img(
@@ -420,11 +415,16 @@ netflixBarList = html.Div(children=[
                 style={'width': '30%'}
             ),
             html.Div("Back to graph",
-                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
-            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign': 'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left': '5%'}
         ),
         href='/mainPage'
     ),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Netflix Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -451,11 +451,6 @@ huluBarList = html.Div(children=[
     html.Div('Streaming Service records', style={'textAlign': 'center'}),
     html.Br(),
     html.Br(),
-    html.Hr(style={'color': '#7FDBFF'}),
-    html.H3('Hulu Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
-    html.Div('This searchable List represents all movies given your search criteria on netflix'),
-    html.Br(),
-    html.Br(),
     dcc.Link(
         html.Button(children=[
             html.Img(
@@ -463,11 +458,16 @@ huluBarList = html.Div(children=[
                 style={'width': '30%'}
             ),
             html.Div("Back to graph",
-                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
-            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign': 'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left': '5%'}
         ),
         href='/mainPage'
     ),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Hulu Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -494,11 +494,6 @@ primeBarList = html.Div(children=[
     html.Div('Streaming Service records', style={'textAlign': 'center'}),
     html.Br(),
     html.Br(),
-    html.Hr(style={'color': '#7FDBFF'}),
-    html.H3('Prime Video Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
-    html.Div('This searchable List represents all movies given your search criteria on netflix'),
-    html.Br(),
-    html.Br(),
     dcc.Link(
         html.Button(children=[
             html.Img(
@@ -506,11 +501,16 @@ primeBarList = html.Div(children=[
                 style={'width': '30%'}
             ),
             html.Div("Back to home",
-                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
-            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign': 'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left': '5%'}
         ),
         href='/mainPage'
     ),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Prime Video Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
     dcc.Checklist(
         id="listGen",
         options=[
@@ -537,11 +537,6 @@ disneyBarList = html.Div(children=[
     html.Div('Streaming Service records', style={'textAlign': 'center'}),
     html.Br(),
     html.Br(),
-    html.Hr(style={'color': '#7FDBFF'}),
-    html.H3('Disney Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
-    html.Div('This searchable List represents all movies given your search criteria on netflix'),
-    html.Br(),
-    html.Br(),
     dcc.Link(
         html.Button(children=[
             html.Img(
@@ -549,11 +544,16 @@ disneyBarList = html.Div(children=[
                 style={'width': '30%'}
             ),
             html.Div("Back to home",
-                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign':'center', 'color': '#00284d'})],
-            style={'background': 'transparent', 'border': '0', 'left':'5%'}
+                     style={'font-weight': 'bold', 'font-size': '12px', 'textAlign': 'center', 'color': '#00284d'})],
+            style={'background': 'transparent', 'border': '0', 'left': '5%'}
         ),
         href='/mainPage'
     ),
+    html.Hr(style={'color': '#7FDBFF'}),
+    html.H3('Disney Barchart movie list with matching search criteria', style={'color': '#df1e56'}),
+    html.Div('This searchable List represents all movies given your search criteria on netflix'),
+    html.Br(),
+    html.Br(),
     dcc.Checklist(
         id="listGen",
         options=[
